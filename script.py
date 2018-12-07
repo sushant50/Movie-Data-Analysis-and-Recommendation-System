@@ -113,10 +113,7 @@ indices = pd.Series(movies.index, index=movies['title'])
 
 # Function that get movie recommendations based on the cosine similarity score of movie genres
 def genre_recommendations(title):
-    print('here',title)
-    if(title is None):
-        return indices.head(20)
-    else:
+    if(title is not None):
         idx = indices[title]
         sim_scores = list(enumerate(cosine_sim[idx]))
         sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
@@ -126,6 +123,9 @@ def genre_recommendations(title):
         movie_indices = [i[0] for i in sim_scores]
         print(movie_indices)
         return titles.iloc[movie_indices]
+    else:
+        print('here',title)
+        return indices.head(20) 
 
 #genre_recommendations(None)
 #genre_recommendations('Good Will Hunting (1997)').head(20)

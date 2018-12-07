@@ -19,6 +19,8 @@ class Recommender(Resource):
     def get(self):
         print("Top Movies")
         movie_name = request.args.get('movie')
+        if not movie_name:
+            movie_name = None
         df = sc.genre_recommendations(movie_name)
         return df.to_json()
         
