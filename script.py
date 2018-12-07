@@ -4,26 +4,7 @@ Spyder Editor
 
 This is a temporary script file.
 """
-#from flask import Flask, request
-#
-#
-#
-#from flask_restful import Resource, Api
-#
-#
-#
-#app = Flask(__name__)
-#api = Api(app)
-#
-#class Employees(Resource):
-#    def get(self, employee_id):
-#        print(employee_id)
-#    
-#api.add_resource(Employees, '/employees/<employee_id>') # Route_1
-#
-#
-#if __name__ == '__main__':
-#     app.run(port='5002')
+
 
 import pandas as pd
 import numpy as np
@@ -94,7 +75,7 @@ def count_word(dataset, ref_col, census):
 
 # Calling this function gives access to a list of genre keywords which are sorted by decreasing frequency
 keyword_occurences, dum = count_word(movies, 'genres', genre_labels)
-keyword_occurences
+#keyword_occurences
 
 # Define the dictionary used to produce the genre wordcloud
 genres = dict()
@@ -120,11 +101,11 @@ movies['genres'] = movies['genres'].fillna("").astype('str')
 from sklearn.feature_extraction.text import TfidfVectorizer
 tf = TfidfVectorizer(analyzer='word',ngram_range=(1, 2),min_df=0, stop_words='english')
 tfidf_matrix = tf.fit_transform(movies['genres'])
-tfidf_matrix.shape
+#tfidf_matrix.shape
 
 from sklearn.metrics.pairwise import linear_kernel
 cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
-cosine_sim
+#cosine_sim
 
 # Build a 1-dimensional array with movie titles
 titles = movies['title']
@@ -132,17 +113,22 @@ indices = pd.Series(movies.index, index=movies['title'])
 
 # Function that get movie recommendations based on the cosine similarity score of movie genres
 def genre_recommendations(title):
-    idx = indices[title]
-    sim_scores = list(enumerate(cosine_sim[idx]))
-    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-    print(sim_scores)
-    sim_scores = sim_scores[1:21]
-    print(len(sim_scores))
-    movie_indices = [i[0] for i in sim_scores]
-    print(movie_indices)
-    return titles.iloc[movie_indices]
+    print('here',title)
+    if(title is None):
+        return indices.head(20)
+    else:
+        idx = indices[title]
+        sim_scores = list(enumerate(cosine_sim[idx]))
+        sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+        print(sim_scores)
+        sim_scores = sim_scores[1:21]
+        print(len(sim_scores))
+        movie_indices = [i[0] for i in sim_scores]
+        print(movie_indices)
+        return titles.iloc[movie_indices]
 
-genre_recommendations('Good Will Hunting (1997)').head(20)
+#genre_recommendations(None)
+#genre_recommendations('Good Will Hunting (1997)').head(20)
 
 # Fill NaN values in user_id and movie_id column with 0
 ratings['user_id'] = ratings['user_id'].fillna(0)
@@ -154,7 +140,7 @@ ratings['rating'] = ratings['rating'].fillna(ratings['rating'].mean())
 # Randomly sample 1% of the ratings dataset
 small_data = ratings.sample(frac=0.02)
 # Check the sample info
-print(small_data.info())
+#print(small_data.info())
 
 from sklearn import cross_validation as cv
 train_data, test_data = cv.train_test_split(small_data, test_size=0.2)
@@ -164,20 +150,20 @@ train_data_matrix = train_data.as_matrix(columns = ['user_id', 'movie_id', 'rati
 test_data_matrix = test_data.as_matrix(columns = ['user_id', 'movie_id', 'rating'])
 
 # Check their shape
-print(train_data_matrix.shape)
-print(test_data_matrix.shape)
+#print(train_data_matrix.shape)
+#print(test_data_matrix.shape)
 
 from sklearn.metrics.pairwise import pairwise_distances
 
 # User Similarity Matrix
 user_correlation = 1 - pairwise_distances(train_data, metric='correlation')
 user_correlation[np.isnan(user_correlation)] = 0
-print(user_correlation[:4, :4])
+#print(user_correlation[:4, :4])
 
 # Item Similarity Matrix
 item_correlation = 1 - pairwise_distances(train_data_matrix.T, metric='correlation')
 item_correlation[np.isnan(item_correlation)] = 0
-print(item_correlation[:4, :4])
+#print(item_correlation[:4, :4])
 
 # Function to predict ratings
 def predict(ratings, similarity, type='user'):
