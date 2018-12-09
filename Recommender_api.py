@@ -9,10 +9,14 @@ Created on Thu Dec  6 20:47:57 2018
 import script as sc
 from flask import Flask,request
 from flask import jsonify
+from flask_cors import CORS
+
 
 from flask_restful import Resource, Api
 
 app = Flask(__name__)
+CORS(app)
+
 api = Api(app)
 
 class Recommender(Resource):
